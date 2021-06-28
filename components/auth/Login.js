@@ -4,7 +4,7 @@ import { View, Button, TextInput } from 'react-native'
 import firebase from 'firebase'
 import { result } from 'lodash';
 
-export class Register extends Component {
+export class Log extends Component {
     constructor(props){
         super(props);
 
