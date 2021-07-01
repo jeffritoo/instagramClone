@@ -4,6 +4,13 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import firebase from 'firebase/app'
 
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './redux/reducers';
+import thunk from 'redux-thunk'
+const store = createStore(rootReducer, applyMiddleware(thunk))
+
+
 //this should be in a .env file
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -25,12 +32,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import LandingScreen from "./components/auth/Landing"
 import RegisterScreen from "./components/auth/Register"
+import MainScreen from './components/Main'
+import AddScreen from './components/main/Add'
 
 const Stack = createStackNavigator();
 
 export class App extends Component {
-  constructor(prop){
-    super(prop);
+  constructor(props){
+    super(props);
     this.state = {
       loaded: false,
     }
@@ -57,18 +66,33 @@ export class App extends Component {
     if(!loaded){
       return(
         <View style={{ flex: 1, justifyContent: 'center'}}>
-          <Text>Loading</Text>
+          <Text>Loading...</Text>
         </View>
       )
     }
-    return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Landing">
-          <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false}} />
-          <Stack.Screen name="Register" component={RegisterScreen}/>
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
+
+    if (!loggedIn){
+      return (
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Landing">
+            <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false}} />
+            <Stack.Screen name="Register" component={RegisterScreen}/>
+          </Stack.Navigator>
+        </NavigationContainer>
+      );
+    }
+    return(
+      <Provider store={store}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Main">
+            <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false}} />
+            <Stack.Screen name="Add" component={AddScreen} options={{ headerShown: false}} />
+          </Stack.Navigator>
+        </NavigationContainer>
+
+        
+      </Provider>
+    )
   }
 }
 
